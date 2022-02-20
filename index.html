@@ -1,0 +1,121 @@
+<html>
+<head>
+<title>MusicOne</title>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+
+<div class="col-md-6">
+  <form>
+    <div class="form-group">
+    <label>First name</label>
+    <input type="text" class="form-control" id="first-name" placeholder="first name">
+  </div>
+  <div class="form-group">
+    <label>Last name</label>
+    <input type="text" class="form-control" id="last-name"placeholder="last name">
+  </div>
+  <div class="form-group">
+    <label for="exampleInputEmail1">Email address</label>
+    <input type="email" class="form-control" id="email" placeholder="Enter email">
+  </div>
+  <button type="submit" id="submit" class="btn btn-primary">Submit</button>
+</form>
+</div>
+
+  <button type="submit" id="getData" class="btn btn-primary">List songs</button>
+
+ <div class="audio-player" id="song">
+            
+        </div>
+</body>
+</html>
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.6/firebase-app.js";
+  import { getDatabase, set, ref ,push, child, onValue} from "https://www.gstatic.com/firebasejs/9.6.6/firebase-database.js";
+
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyA1qSGK_kvd-TViEl_vnqC1kVNlzcNgLd8",
+    authDomain: "custom-zone-271515.firebaseapp.com",
+    databaseURL: "https://custom-zone-271515-default-rtdb.firebaseio.com",
+    projectId: "custom-zone-271515",
+    storageBucket: "custom-zone-271515.appspot.com",
+    messagingSenderId: "504853211033",
+    appId: "1:504853211033:web:5fb37524912ebad58dd508"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  
+  // Get a reference to the database service
+  const database = getDatabase(app);
+
+  // write data
+  submit.addEventListener('click',(e) => {
+    var firstName = document.getElementById('first-name').value;  
+    var lastName = document.getElementById('last-name').value;  
+    var email = document.getElementById('email').value;  
+
+    const userId = push(child(ref(database), 'users')).key;
+   
+    set(ref(database, 'users/' + userId), {
+    firstName: firstName,
+    lastName: lastName,
+    email : email
+   });
+   alert('saved');
+  });
+
+  // read data
+  getData.addEventListener('click',(e) => {
+
+    $('#dataTbl td').remove();
+    var rowNum = 0; 
+    const dbRef = ref(database, 'users/');
+
+    onValue(dbRef, (snapshot) => {
+      snapshot.forEach((childSnapshot) => {
+      const childKey = childSnapshot.key;
+      const childData = childSnapshot.val();
+      // ...
+      var song_name = document.createElement('p');
+      var movie_name = document.createElement('p');
+      var song_text = document.createTextNode(childData.firstName);
+      var movie_text = document.createTextNode(childData.lastName);
+      song_name.appendChild(song_text);
+      movie_name.appendChild(movie_text);
+      document.getElementById('song').appendChild(song_name);
+      document.getElementById('song').appendChild(movie_name);
+      var sound =document.createElement('audio');
+      sound.id = 'audio-player'; 
+      sound.controls = 'controls'; 
+      sound.src = childData.email;
+      sound.type = 'audio/mpeg'; 
+      document.getElementById('song').appendChild(sound);
+      //var line =document.createElement('br');
+      //document.getElementById('song').appendChild(line);
+      
+      });
+    }, {
+      
+    });
+
+
+  });
+
+
+</script>
